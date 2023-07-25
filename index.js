@@ -8,5 +8,4 @@ sapp(process.env.NODE_ENV==="prod", {
     lib:{
         entries:["index.js"]
     }
- 
 })
