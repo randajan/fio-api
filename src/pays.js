@@ -7,5 +7,5 @@ export const payInterfaceFactory = pay=>columnIdOrAlias=>{
 }
 
 export const mapPays = async (pays, callback, ...a)=>{
-    return pays.map(pay => callback(this, payInterfaceFactory(pay), ...a));
+    return pays.map(pay => callback(payInterfaceFactory(pay), ...a));
 }
