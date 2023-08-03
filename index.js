@@ -6,6 +6,7 @@ sapp(process.env.NODE_ENV==="prod", {
     mode:"node",
     external:["chalk"],
     lib:{
+        minify:false,
         entries:["index.js"]
     }
 })
