@@ -1,6 +1,13 @@
 import fetch from "node-fetch";
 import { toDateString } from "./date";
-import { mapPays } from "./pays";
+import { getColumn } from "./columns";
+
+
+export const payInterfaceFactory = pay=>columnIdOrAlias=>{
+    const { id, trait } = getColumn(columnIdOrAlias);
+    const pc = pay["column"+id];
+    return trait(pc ? pc.value : null);
+}
 
 const enumerable = true;
 export class Fio {
@@ -22,18 +29,26 @@ export class Fio {
 
     async fetch(path) {
         const url = this.apiUrl + (Array.isArray(path) ? path.join("/") : String(path));
-        const data = await fetch(url).then(resp=>resp.json());
-        const state = data?.accountStatement;
-        if (!state) { throw Error(this.msg("unable to fetch response body")); }
+        const resp = await fetch(url);
+        const json = await resp.text();
 
-        const accountId = state.info.accountId;
+        let data;
+        try { data = JSON.parse(json); } catch(err) { throw Error(this.msg("json malformated")); }
+
+        const state = data?.accountStatement;
+        const accountId = state?.info?.accountId;
+        const transactions = state?.transactionList?.transaction;
+
+        if (!accountId || !transactions) { throw Error(this.msg("unable to fetch response body")); }
+
         if (accountId !== this.accountId) { throw Error(this.msg("wrong accountId '" + accountId + "'")); }
 
-        return state.transactionList.transaction;
+        return transactions;
     }
 
     async map(path, callback, ...a) {
-        return mapPays(await this.fetch(path), callback, ...a);
+        const pays = await this.fetch(path);
+        return Promise.all(pays.map(pay => callback(this, payInterfaceFactory(pay), ...a)));
     }
 
     async paysLast(callback, ...a) {
