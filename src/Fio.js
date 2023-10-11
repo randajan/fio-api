@@ -33,7 +33,7 @@ export class Fio {
         const json = await resp.text();
 
         let data;
-        try { data = JSON.parse(json); } catch(err) { throw Error(this.msg("json malformated")); }
+        try { data = JSON.parse(json); } catch(err) { throw Error(this.msg("json malformated: " + json)); }
 
         const state = data?.accountStatement;
         const accountId = state?.info?.accountId;
