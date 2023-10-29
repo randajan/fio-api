@@ -27,36 +27,45 @@ export class Fio {
         return "FIO api for '" + this.account + "' failed: " + msg;
     }
 
-    async fetch(path) {
+    async fetch(path, method="GET") {
         const url = this.apiUrl + (Array.isArray(path) ? path.join("/") : String(path));
-        const resp = await fetch(url);
+        const resp = await fetch(url, { method });
         const json = await resp.text();
+        const msg = method + " " + url;
 
         let data;
-        try { data = JSON.parse(json); } catch(err) { throw Error(this.msg("json malformated: " + json)); }
+        try { data = JSON.parse(json); } catch(err) { throw Error(this.msg(msg + "\njson malformated\n" + json)); }
 
         const state = data?.accountStatement;
         const accountId = state?.info?.accountId;
         const transactions = state?.transactionList?.transaction;
 
-        if (!accountId || !transactions) { throw Error(this.msg("unable to fetch response body")); }
+        if (!accountId || !transactions) { throw Error(this.msg(msg + "\nunable to fetch response body")); }
 
-        if (accountId !== this.accountId) { throw Error(this.msg("wrong accountId '" + accountId + "'")); }
+        if (accountId !== this.accountId) { throw Error(this.msg(msg + "\nwrong accountId '" + accountId + "'")); }
 
         return transactions;
     }
 
-    async map(path, callback, ...a) {
+    async map(path, onPay, ...a) {
         const pays = await this.fetch(path);
-        return Promise.all(pays.map(pay => callback(this, payInterfaceFactory(pay), ...a)));
+        return Promise.all(pays.map(pay => onPay(this, payInterfaceFactory(pay), ...a)));
     }
 
-    async paysLast(callback, ...a) {
-        return this.map(["last", this.token, "transactions.json"], callback, ...a);
+    async setLastId(payId) {
+        return this.fetch(["set-last-id", this.token, payId]);
     }
 
-    async paysByPeriod(fromDate, toDate, callback, ...a) {
-        return this.map(["periods", this.token, toDateString(fromDate), toDateString(toDate), "transactions.json"], callback, ...a);
+    async setLastDate(date) {
+        return this.fetch(["set-last-date", this.token, toDateString(date)]);
+    }
+
+    async paysLast(onPay, ...a) {
+        return this.map(["last", this.token, "transactions.json"], onPay, ...a);
+    }
+
+    async paysByPeriod(fromDate, toDate, onPay, ...a) {
+        return this.map(["periods", this.token, toDateString(fromDate), toDateString(toDate), "transactions.json"], onPay, ...a);
     }
 
 }
