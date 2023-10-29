@@ -1,6 +1,6 @@
 {
   "name": "@randajan/fio-api",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Fio API for bank transactions with custom columns and date support.",
   "repository": "randajan/fio-api",
   "type": "module",
