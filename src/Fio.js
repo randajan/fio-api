@@ -2,7 +2,6 @@ import fetch from "node-fetch";
 import { toDateString } from "./date";
 import { getColumn } from "./columns";
 
-
 export const payInterfaceFactory = pay=>columnIdOrAlias=>{
     const { id, trait } = getColumn(columnIdOrAlias);
     const pc = pay["column"+id];
@@ -12,11 +11,11 @@ export const payInterfaceFactory = pay=>columnIdOrAlias=>{
 const enumerable = true;
 export class Fio {
 
-    static create(accountId, token) { return new Fio(accountId, token); }
+    static create(accountId, token, apiUrl="https://fioapi.fio.cz/v1/rest/") { return new Fio(accountId, token, apiUrl); }
 
-    constructor(accountId, token) {
+    constructor(accountId, token, apiUrl="https://fioapi.fio.cz/v1/rest/") {
         Object.defineProperties(this, {
-            apiUrl: { enumerable, value: "https://www.fio.cz/ib_api/rest/" },
+            apiUrl: { enumerable, value: apiUrl },
             token: { enumerable, value: token },
             accountId: { enumerable, value: accountId },
             account: { enumerable, get: _ => accountId + "/2010" }

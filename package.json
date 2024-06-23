@@ -19,7 +19,7 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@randajan/simple-lib": "^2.3.1"
+    "@randajan/simple-lib": "^2.3.2"
   },
   "files": [
     "dist",
