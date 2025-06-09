@@ -28,20 +28,24 @@ export class Fio {
 
     async fetch(path, method="GET") {
         const url = this.apiUrl + (Array.isArray(path) ? path.join("/") : String(path));
-        const resp = await fetch(url, { method });
-        const json = await resp.text();
         const msg = method + " " + url;
 
+        const resp = await fetch(url, { method });
+        const body = await resp.text();
+
+        if (resp.status != 200) { throw Error(this.msg(`response status ${resp.status}\n` + msg + "\n" + body)); }
+        
         let data;
-        try { data = JSON.parse(json); } catch(err) { throw Error(this.msg(msg + "\njson malformated\n" + json)); }
+        if (!body) { throw Error(this.msg("blank response\n" + msg)); }
+        try { data = JSON.parse(body); } catch(err) { throw Error(this.msg("json malformated\n" + msg + "\n" + body)); }
 
         const state = data?.accountStatement;
         const accountId = state?.info?.accountId;
         const transactions = state?.transactionList?.transaction;
 
-        if (!accountId || !transactions) { throw Error(this.msg(msg + "\nunable to fetch response body")); }
+        if (!accountId || !transactions) { throw Error(this.msg("unable to fetch response body\n" + msg)); }
 
-        if (accountId !== this.accountId) { throw Error(this.msg(msg + "\nwrong accountId '" + accountId + "'")); }
+        if (accountId !== this.accountId) { throw Error(this.msg("wrong accountId '" + accountId + "'\n" + msg)); }
 
         return transactions;
     }

@@ -7,7 +7,10 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
   },
   "scripts": {
     "start": "set NODE_ENV=dev&& node ./index.js",
@@ -15,11 +18,11 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "date-fns": "^3.6.0",
+    "date-fns": "^4.1.0",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "@randajan/simple-lib": "^2.3.2"
+    "@randajan/simple-lib": "^3.2.0"
   },
   "files": [
     "dist",

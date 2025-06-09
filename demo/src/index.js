@@ -1,6 +1,4 @@
-
-import { info, log } from "@randajan/simple-lib/node";
-import Fio from "../../dist/index.js";
+import Fio from "../../dist/esm/index.mjs";
 
 import credentials from "./credentials.json";
 
@@ -17,12 +15,13 @@ const fio = Fio.create(credentials.accountId, credentials.apiToken);
 // });
 
 // Get transactions in a specific period
-const fromDate = "2024-06-01";
-const toDate = "2024-06-30";
+const fromDate = "2025-05-01";
+const toDate = "2025-06-30";
 fio.paysByPeriod(fromDate, toDate, (fio, pay, index) => {
     console.log("Transaction no.", pay("id_task"));
     console.log("Date:", pay("Datum"));
     console.log("Amount:", pay("Objem"));
     console.log("Account number:", pay("Protiúčet"));
+    console.log("Currency: ", pay("Měna"));
     // ... other transaction details ...
 });
